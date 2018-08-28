@@ -23,6 +23,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.batch.item.data.MongoItemWriter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 /**
  *
@@ -41,6 +44,12 @@ public class BatchConfig {
     @Autowired
     public MongoTemplate mongoTemplate;
 
+    @Value("${start}")
+    private String start;
+
+    @Value("${end}")
+    private String end;
+
     @Bean
     public SkipPolicy duplicateKeyExceptionProcessorSkipper() {
         return new DuplicateKeyExceptionProcessorSkipper();
@@ -56,8 +65,6 @@ public class BatchConfig {
         return new NullPointerExceptionSkipper();
     }
 
-    
-
     @Bean
 
     public Job job() {
@@ -70,7 +77,7 @@ public class BatchConfig {
     @Qualifier(value = "capDataStep")
     public Step capDataStep() {
         return stepBuilderFactory.get("capDataStep").<CapturedData, CapturedData>chunk(10)
-                .reader(capturedDataReader()).processor(new CapturedDataProcessor()).writer(capturedDataWriter()).faultTolerant().skipPolicy(dataIntegrityViolationExceptionSkipper()).faultTolerant().skipPolicy(duplicateKeyExceptionProcessorSkipper()).build();
+                .reader(capturedDataReader()).processor(new CapturedDataProcessor())/*.writer(capturedDataWriter()).faultTolerant().skipPolicy(dataIntegrityViolationExceptionSkipper()).faultTolerant().skipPolicy(duplicateKeyExceptionProcessorSkipper())*/.build();
     }
 
     @Bean
@@ -84,7 +91,7 @@ public class BatchConfig {
             }
         });
         reader.setTargetType(CapturedData.class);
-        reader.setQuery("{}");
+        reader.setQuery(new Query().addCriteria(Criteria.where("created").gte(Long.valueOf(start)).lte(Long.valueOf(end))));////where("created").gte(Long.valueOf(start)).andOperator(where("created").lte(Long.valueOf(end)))));
         return reader;
     }
 
