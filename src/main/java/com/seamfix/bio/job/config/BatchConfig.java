@@ -77,7 +77,7 @@ public class BatchConfig {
     @Qualifier(value = "capDataStep")
     public Step capDataStep() {
         return stepBuilderFactory.get("capDataStep").<CapturedData, CapturedData>chunk(10)
-                .reader(capturedDataReader()).processor(new CapturedDataProcessor())/*.writer(capturedDataWriter()).faultTolerant().skipPolicy(dataIntegrityViolationExceptionSkipper()).faultTolerant().skipPolicy(duplicateKeyExceptionProcessorSkipper())*/.build();
+                .reader(capturedDataReader()).processor(new CapturedDataProcessor()).writer(capturedDataWriter()).faultTolerant().skipPolicy(dataIntegrityViolationExceptionSkipper()).faultTolerant().skipPolicy(duplicateKeyExceptionProcessorSkipper()).build();
     }
 
     @Bean
