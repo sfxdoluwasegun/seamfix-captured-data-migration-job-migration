@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.Base64;
 
 public class CapturedDataProcessor implements ItemProcessor<CapturedData, CapturedData> {
-    
+
     private static final Logger log = LoggerFactory.getLogger(CapturedDataProcessor.class);
-    
+
     @Override
     public CapturedData process(CapturedData inData) throws Exception {
         log.info("migration in progress!");
@@ -40,7 +40,7 @@ public class CapturedDataProcessor implements ItemProcessor<CapturedData, Captur
                         } else {
                             updatedPixDataUnits.add(unit);
                         }
-                        
+
                     }
                 }
             }
@@ -63,11 +63,11 @@ public class CapturedDataProcessor implements ItemProcessor<CapturedData, Captur
                             } else {
                                 updatedfileUploadUnits.add(unit);
                             }
-                            
+
                         } else {
                             updatedfileUploadUnits.add(unit);
                         }
-                        
+
                     }
                 }
             }
@@ -75,7 +75,7 @@ public class CapturedDataProcessor implements ItemProcessor<CapturedData, Captur
         if (!updatedfileUploadUnits.isEmpty()) {
             outData.setFileUpload(updatedfileUploadUnits);
         }
-        
+
         ArrayList<DataUnit> fingerUnits = inData.getFingers();
         ArrayList<DataUnit> updatedfingerUnits = new ArrayList<>();
         if (fingerUnits != null) {
@@ -83,7 +83,7 @@ public class CapturedDataProcessor implements ItemProcessor<CapturedData, Captur
                 if (unit != null) {
                     if (unit.getValue() != null) {
                         String base64WsqString = null;
-                        
+
                         try {
                             base64WsqString = FingersTools.getInstance().getExtractor().toWsq(unit.getValue());
                         } catch (Exception ex) {
@@ -95,7 +95,7 @@ public class CapturedDataProcessor implements ItemProcessor<CapturedData, Captur
                         } else {
                             updatedfileUploadUnits.add(unit);
                         }
-                        
+
                     }
                 }
             }
@@ -103,7 +103,8 @@ public class CapturedDataProcessor implements ItemProcessor<CapturedData, Captur
         if (!updatedfingerUnits.isEmpty()) {
             outData.setFingers(updatedfingerUnits);
         }
-        
+
         return outData;
     }
+
 }
