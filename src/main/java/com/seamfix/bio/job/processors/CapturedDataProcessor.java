@@ -50,7 +50,7 @@ public class CapturedDataProcessor implements ItemProcessor<CapturedData, Captur
             }
         }
         if (!oks.isEmpty()) {
-            outData.setText(oks);
+            outData.setSignature(oks);
         }
 
         ////////////////
