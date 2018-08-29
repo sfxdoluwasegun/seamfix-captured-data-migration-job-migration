@@ -14,7 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
  *
  * @author Uchechukwu Onuoha
  */
-@Document(collection = "captured_data")
+@Document(collection = "new_captured_data")
 public class CapturedData extends BaseEntity {
 
     /**
