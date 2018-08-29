@@ -2,11 +2,11 @@ package com.seamfix.bio.job.processors;
 
 import com.seamfix.bio.util.FingersTools;
 import com.seamfix.util.CompressorWriter;
-import com.sf.bioregistra.entity.CapturedData;
+import com.seamfix.bio.entities.CapturedData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
-import com.sf.bioregistra.entity.DataUnit;
+import com.seamfix.bio.entities.DataUnit;
 import java.util.ArrayList;
 import java.util.Base64;
 

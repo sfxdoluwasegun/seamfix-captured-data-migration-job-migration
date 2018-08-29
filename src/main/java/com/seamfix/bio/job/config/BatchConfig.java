@@ -6,7 +6,7 @@ import com.seamfix.bio.job.events.Listener;
 import com.seamfix.bio.job.events.DuplicateKeyExceptionProcessorSkipper;
 import com.seamfix.bio.job.events.NullPointerExceptionSkipper;
 import com.seamfix.bio.job.processors.CapturedDataProcessor;
-import com.sf.bioregistra.entity.CapturedData;
+import com.seamfix.bio.entities.CapturedData;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import java.util.HashMap;
 import org.springframework.batch.core.Job;
