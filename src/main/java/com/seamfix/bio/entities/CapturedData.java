@@ -7,7 +7,6 @@ package com.seamfix.bio.entities;
 
 import com.sf.bioregistra.entity.BaseEntity;
 import java.util.ArrayList;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -35,7 +34,7 @@ public class CapturedData extends BaseEntity {
     /**
      * unique ID of the capture
      */
-    @Indexed(unique = true)
+    //@Indexed(unique = true)
     private String uniqueId;
 
     /**

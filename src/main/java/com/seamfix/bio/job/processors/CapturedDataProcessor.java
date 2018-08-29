@@ -16,10 +16,16 @@ public class CapturedDataProcessor implements ItemProcessor<CapturedData, Captur
     private static final Logger log = LoggerFactory.getLogger(CapturedDataProcessor.class);
 
     private final CapturedDataMongoRepository capturedDataMongoRepository;
+    
+   
+    
 
     public CapturedDataProcessor(CapturedDataMongoRepository capturedDataMongoRepository) {
         this.capturedDataMongoRepository = capturedDataMongoRepository;
+        
     }
+
+    
 
     @Override
     public CapturedData process(CapturedData inData) throws Exception {
@@ -105,8 +111,8 @@ public class CapturedDataProcessor implements ItemProcessor<CapturedData, Captur
         if (!updatedfingerUnits.isEmpty()) {
             outData.setFingers(updatedfingerUnits);
         }
-        capturedDataMongoRepository.save(outData);
-        return null;
+       capturedDataMongoRepository.save(outData);
+        return outData;
     }
 
 }

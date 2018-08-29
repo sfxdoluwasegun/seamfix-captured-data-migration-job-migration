@@ -23,7 +23,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.batch.item.data.MongoItemWriter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -54,7 +53,6 @@ public class BatchConfig {
     @Value("${collection.name.to.read.from}")
     private String readFromCollectionName;
 
-   
     @Autowired
     CapturedDataMongoRepository capturedDataMongoRepository;
 
@@ -85,7 +83,7 @@ public class BatchConfig {
     @Qualifier(value = "capDataStep")
     public Step capDataStep() {
         return stepBuilderFactory.get("capDataStep").<CapturedData, CapturedData>chunk(10)
-                .reader(capturedDataReader()).processor(new CapturedDataProcessor(capturedDataMongoRepository))./*writer(capturedDataWriter()).faultTolerant().skipPolicy(dataIntegrityViolationExceptionSkipper()).faultTolerant().skipPolicy(duplicateKeyExceptionProcessorSkipper())*/build();
+                .reader(capturedDataReader()).processor(new CapturedDataProcessor(capturedDataMongoRepository))./*writer(capturedDataWriter()).faultTolerant().skipPolicy(dataIntegrityViolationExceptionSkipper()).faultTolerant().skipPolicy(duplicateKeyExceptionProcessorSkipper()).*/build();
     }
 
     @Bean
