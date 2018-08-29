@@ -91,9 +91,9 @@ public class CapturedDataProcessor implements ItemProcessor<CapturedData, Captur
                         }
                         if (base64WsqString != null) {
                             unit.setValue(base64WsqString);
-                            updatedfileUploadUnits.add(unit);
+                            updatedfingerUnits.add(unit);
                         } else {
-                            updatedfileUploadUnits.add(unit);
+                            updatedfingerUnits.add(unit);
                         }
 
                     }
