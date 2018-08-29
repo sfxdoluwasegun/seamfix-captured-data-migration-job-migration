@@ -6,14 +6,15 @@
 package com.seamfix.bio.entities;
 
 import com.sf.bioregistra.entity.BaseEntity;
-import java.util.ArrayList;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.ArrayList;
 
 /**
  *
  * @author Uchechukwu Onuoha
  */
-@Document(collection = "new_captured_data")
+@Document(collection = "captured_data")
 public class CapturedData extends BaseEntity {
 
     /**
