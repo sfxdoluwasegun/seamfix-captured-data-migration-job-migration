@@ -16,33 +16,29 @@ public class CapturedDataProcessor implements ItemProcessor<CapturedData, Captur
     private static final Logger log = LoggerFactory.getLogger(CapturedDataProcessor.class);
 
     private final CapturedDataMongoRepository capturedDataMongoRepository;
-    
-   
-    
 
     public CapturedDataProcessor(CapturedDataMongoRepository capturedDataMongoRepository) {
         this.capturedDataMongoRepository = capturedDataMongoRepository;
-        
-    }
 
-    
+    }
 
     @Override
     public CapturedData process(CapturedData inData) throws Exception {
         log.info("migration in progress!");
-        CapturedData outData = capturedDataMongoRepository.findByUniqueIdQuery(inData.getUniqueId());
-        ArrayList<DataUnit> oldPixDataUnits = inData.getPix();
-        ArrayList<DataUnit> updatePixDataUnits = outData.getPix();
-        if (updatePixDataUnits != null) {
-            for (DataUnit upDateUnit : updatePixDataUnits) {
+        CapturedData outData = capturedDataMongoRepository.findByUniqueIdQuery(inData.getUniqueId()).get(0);
+        /////////////////
+
+        ArrayList<DataUnit> oldSignDataUnits = inData.getSignature();
+        ArrayList<DataUnit> updateSignDataUnits = outData.getSignature();
+        ArrayList<DataUnit> oks = new ArrayList<>();
+        if (updateSignDataUnits != null) {
+            for (DataUnit upDateUnit : updateSignDataUnits) {
                 if (upDateUnit != null) {
-                    DataUnit u = upDateUnit;
-                    for (DataUnit oldDataUnit : oldPixDataUnits) {
+                    for (DataUnit oldDataUnit : oldSignDataUnits) {
                         if (oldDataUnit != null) {
                             if (oldDataUnit.getLabel().equalsIgnoreCase(upDateUnit.getLabel())) {
                                 upDateUnit.setId(oldDataUnit.getId());
-                                updatePixDataUnits.remove(u);
-                                updatePixDataUnits.add(upDateUnit);
+                                oks.add(upDateUnit);
                                 break;
                             }
 
@@ -53,8 +49,60 @@ public class CapturedDataProcessor implements ItemProcessor<CapturedData, Captur
                 }
             }
         }
-        if (!updatePixDataUnits.isEmpty()) {
-            outData.setPix(updatePixDataUnits);
+        if (!oks.isEmpty()) {
+            outData.setText(oks);
+        }
+
+        ////////////////
+        ArrayList<DataUnit> oldTextDataUnits = inData.getText();
+        ArrayList<DataUnit> updateTextDataUnits = outData.getText();
+        ArrayList<DataUnit> okt = new ArrayList<>();
+        if (updateTextDataUnits != null) {
+            for (DataUnit upDateUnit : updateTextDataUnits) {
+                if (upDateUnit != null) {
+                    for (DataUnit oldDataUnit : oldTextDataUnits) {
+                        if (oldDataUnit != null) {
+                            if (oldDataUnit.getLabel().equalsIgnoreCase(upDateUnit.getLabel())) {
+                                upDateUnit.setId(oldDataUnit.getId());
+                                okt.add(upDateUnit);
+                                break;
+                            }
+
+                        }
+
+                        //
+                    }
+                }
+            }
+        }
+        if (!okt.isEmpty()) {
+            outData.setText(okt);
+        }
+
+        /////////////////
+        ArrayList<DataUnit> oldPixDataUnits = inData.getPix();
+        ArrayList<DataUnit> updatePixDataUnits = outData.getPix();
+        ArrayList<DataUnit> ok = new ArrayList<>();
+        if (updatePixDataUnits != null) {
+            for (DataUnit upDateUnit : updatePixDataUnits) {
+                if (upDateUnit != null) {
+                    for (DataUnit oldDataUnit : oldPixDataUnits) {
+                        if (oldDataUnit != null) {
+                            if (oldDataUnit.getLabel().equalsIgnoreCase(upDateUnit.getLabel())) {
+                                upDateUnit.setId(oldDataUnit.getId());
+                                ok.add(upDateUnit);
+                                break;
+                            }
+
+                        }
+
+                        //
+                    }
+                }
+            }
+        }
+        if (!ok.isEmpty()) {
+            outData.setPix(ok);
         }
         ArrayList<DataUnit> fileUploadUnits = inData.getFileUpload();
         ArrayList<DataUnit> updatedfileUploadUnits = new ArrayList<>();
@@ -111,7 +159,7 @@ public class CapturedDataProcessor implements ItemProcessor<CapturedData, Captur
         if (!updatedfingerUnits.isEmpty()) {
             outData.setFingers(updatedfingerUnits);
         }
-       capturedDataMongoRepository.save(outData);
+        capturedDataMongoRepository.save(outData);
         return outData;
     }
 

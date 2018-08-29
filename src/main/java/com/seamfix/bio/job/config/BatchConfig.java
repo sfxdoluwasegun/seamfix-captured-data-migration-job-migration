@@ -83,7 +83,7 @@ public class BatchConfig {
     @Qualifier(value = "capDataStep")
     public Step capDataStep() {
         return stepBuilderFactory.get("capDataStep").<CapturedData, CapturedData>chunk(10)
-                .reader(capturedDataReader()).processor(new CapturedDataProcessor(capturedDataMongoRepository))./*writer(capturedDataWriter()).faultTolerant().skipPolicy(dataIntegrityViolationExceptionSkipper()).faultTolerant().skipPolicy(duplicateKeyExceptionProcessorSkipper()).*/build();
+                .reader(capturedDataReader()).processor(new CapturedDataProcessor(capturedDataMongoRepository)).build();
     }
 
     @Bean
@@ -100,14 +100,5 @@ public class BatchConfig {
         reader.setQuery(new Query().addCriteria(Criteria.where("created").gte(Long.valueOf(start)).lte(Long.valueOf(end))));////where("created").gte(Long.valueOf(start)).andOperator(where("created").lte(Long.valueOf(end)))));
         return reader;
     }
-//
-//    @Bean
-//    public MongoItemWriter<CapturedData> capturedDataWriter() {
-//        MongoItemWriter<CapturedData> writer = new MongoItemWriter<>();
-//        writer.setTemplate(mongoTemplate);
-//        writer.setCollection(writeToCollectionName);
-//        return writer;
-//
-//    }
 
 }

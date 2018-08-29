@@ -6,6 +6,7 @@
 package com.seamfix.bio.mongodb.dao;
 
 import com.seamfix.bio.entities.CapturedData;
+import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
@@ -16,6 +17,6 @@ import org.springframework.data.mongodb.repository.Query;
 public interface CapturedDataMongoRepository extends MongoRepository<CapturedData, String> {
 
     @Query("{ 'uniqueId' : ?0 }")
-    CapturedData findByUniqueIdQuery(String uniqueId);
+    List<CapturedData> findByUniqueIdQuery(String uniqueId);
 
 }
