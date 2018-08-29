@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 import com.seamfix.bio.entities.DataUnit;
+import com.seamfix.bio.mongodb.dao.CapturedDataMongoRepository;
 import java.util.ArrayList;
 import java.util.Base64;
 
@@ -14,39 +15,94 @@ public class CapturedDataProcessor implements ItemProcessor<CapturedData, Captur
 
     private static final Logger log = LoggerFactory.getLogger(CapturedDataProcessor.class);
 
+    private final CapturedDataMongoRepository capturedDataMongoRepository;
+
+    public CapturedDataProcessor(CapturedDataMongoRepository capturedDataMongoRepository) {
+        this.capturedDataMongoRepository = capturedDataMongoRepository;
+
+    }
+
     @Override
     public CapturedData process(CapturedData inData) throws Exception {
         log.info("migration in progress!");
-        CapturedData outData = new CapturedData();
-        outData = inData;
-        ArrayList<DataUnit> pixDataUnits = inData.getPix();
-        ArrayList<DataUnit> updatedPixDataUnits = new ArrayList<>();
-        if (pixDataUnits != null) {
-            for (DataUnit unit : pixDataUnits) {
-                if (unit != null) {
-                    if (unit.getValue() != null) {
-                        byte[] df = null;
-                        try {
-                            df = Base64.getDecoder().decode(unit.getValue());
-                        } catch (Exception ex) {
-                            log.error("Error  " + ex.getMessage());
-                        }
-                        if (df != null) {
-                            df = CompressorWriter.compress(df, 0.7f, "jpeg");
-                        }
-                        if (df != null) {
-                            unit.setValue(Base64.getEncoder().encodeToString(df));
-                            updatedPixDataUnits.add(unit);
-                        } else {
-                            updatedPixDataUnits.add(unit);
+        CapturedData outData = capturedDataMongoRepository.findByUniqueIdQuery(inData.getUniqueId()).get(0);
+        /////////////////
+
+        ArrayList<DataUnit> oldSignDataUnits = inData.getSignature();
+        ArrayList<DataUnit> updateSignDataUnits = outData.getSignature();
+        ArrayList<DataUnit> oks = new ArrayList<>();
+        if (updateSignDataUnits != null) {
+            for (DataUnit upDateUnit : updateSignDataUnits) {
+                if (upDateUnit != null) {
+                    for (DataUnit oldDataUnit : oldSignDataUnits) {
+                        if (oldDataUnit != null) {
+                            if (oldDataUnit.getLabel().equalsIgnoreCase(upDateUnit.getLabel())) {
+                                upDateUnit.setId(oldDataUnit.getId());
+                                oks.add(upDateUnit);
+                                break;
+                            }
+
                         }
 
+                        //
                     }
                 }
             }
         }
-        if (!updatedPixDataUnits.isEmpty()) {
-            outData.setPix(updatedPixDataUnits);
+        if (!oks.isEmpty()) {
+            outData.setSignature(oks);
+        }
+
+        ////////////////
+        ArrayList<DataUnit> oldTextDataUnits = inData.getText();
+        ArrayList<DataUnit> updateTextDataUnits = outData.getText();
+        ArrayList<DataUnit> okt = new ArrayList<>();
+        if (updateTextDataUnits != null) {
+            for (DataUnit upDateUnit : updateTextDataUnits) {
+                if (upDateUnit != null) {
+                    for (DataUnit oldDataUnit : oldTextDataUnits) {
+                        if (oldDataUnit != null) {
+                            if (oldDataUnit.getLabel().equalsIgnoreCase(upDateUnit.getLabel())) {
+                                upDateUnit.setId(oldDataUnit.getId());
+                                okt.add(upDateUnit);
+                                break;
+                            }
+
+                        }
+
+                        //
+                    }
+                }
+            }
+        }
+        if (!okt.isEmpty()) {
+            outData.setText(okt);
+        }
+
+        /////////////////
+        ArrayList<DataUnit> oldPixDataUnits = inData.getPix();
+        ArrayList<DataUnit> updatePixDataUnits = outData.getPix();
+        ArrayList<DataUnit> ok = new ArrayList<>();
+        if (updatePixDataUnits != null) {
+            for (DataUnit upDateUnit : updatePixDataUnits) {
+                if (upDateUnit != null) {
+                    for (DataUnit oldDataUnit : oldPixDataUnits) {
+                        if (oldDataUnit != null) {
+                            if (oldDataUnit.getLabel().equalsIgnoreCase(upDateUnit.getLabel())) {
+                                upDateUnit.setId(oldDataUnit.getId());
+                                ok.add(upDateUnit);
+                                break;
+                            }
+
+                        }
+
+                        //
+                    }
+                }
+            }
+        }
+        if (!ok.isEmpty()) {
+            outData.setPix(ok);
         }
         ArrayList<DataUnit> fileUploadUnits = inData.getFileUpload();
         ArrayList<DataUnit> updatedfileUploadUnits = new ArrayList<>();
@@ -103,7 +159,7 @@ public class CapturedDataProcessor implements ItemProcessor<CapturedData, Captur
         if (!updatedfingerUnits.isEmpty()) {
             outData.setFingers(updatedfingerUnits);
         }
-
+        capturedDataMongoRepository.save(outData);
         return outData;
     }
 
