@@ -8,11 +8,13 @@ package com.seamfix.bio.entities;
 import com.sf.bioregistra.entity.BaseEntity;
 import java.util.ArrayList;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  *
- * @author Uchechukwu Onuoha 
+ * @author Uchechukwu Onuoha
  */
+@Document(collection = "captured_data")
 public class CapturedData extends BaseEntity {
 
     /**
@@ -33,37 +35,32 @@ public class CapturedData extends BaseEntity {
     /**
      * unique ID of the capture
      */
-   @Indexed(unique=true)
+    @Indexed(unique = true)
     private String uniqueId;
 
     /**
      * list of textual data (demographics) captured
      */
-    
     private ArrayList<DataUnit> text;
 
     /**
      * list of fingerprints captured
      */
-    
     private ArrayList<DataUnit> fingers;
 
     /**
      * list of pictures captured
      */
-    
     private ArrayList<DataUnit> pix; //using shorter field names to reduce data footprint
 
     /**
      * list of fileUpload data (files and signatures) captured
      */
-    
     private ArrayList<DataUnit> fileUpload;
 
     /**
      * list of signature images captured
      */
-    
     private ArrayList<DataUnit> signature;
 
     /**
@@ -149,7 +146,7 @@ public class CapturedData extends BaseEntity {
     private String captureAddr;
 
     private Long modified;
-    
+
     private Double appVersion;
 
     public String getpId() {
@@ -359,13 +356,15 @@ public class CapturedData extends BaseEntity {
         this.fileUpload = fileUpload;
     }
 
-	public Double getAppVersion() {
+    public Double getAppVersion() {
         return appVersion;
     }
 
     public void setAppVersion(Double appVersion) {
         this.appVersion = appVersion;
-    }    public ArrayList<DataUnit> getSignature() {
+    }
+
+    public ArrayList<DataUnit> getSignature() {
         return signature;
     }
 
@@ -374,4 +373,3 @@ public class CapturedData extends BaseEntity {
     }
 
 }
-

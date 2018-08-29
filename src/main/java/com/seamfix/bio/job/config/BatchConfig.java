@@ -7,6 +7,7 @@ import com.seamfix.bio.job.events.DuplicateKeyExceptionProcessorSkipper;
 import com.seamfix.bio.job.events.NullPointerExceptionSkipper;
 import com.seamfix.bio.job.processors.CapturedDataProcessor;
 import com.seamfix.bio.entities.CapturedData;
+import com.seamfix.bio.mongodb.dao.CapturedDataMongoRepository;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import java.util.HashMap;
 import org.springframework.batch.core.Job;
@@ -50,6 +51,15 @@ public class BatchConfig {
     @Value("${end}")
     private String end;
 
+    @Value("${collection.name.to.read.from}")
+    private String readFromCollectionName;
+
+    @Value("${collection.name.to.update}")
+    private String writeToCollectionName;
+
+    @Autowired
+    CapturedDataMongoRepository capturedDataMongoRepository;
+
     @Bean
     public SkipPolicy duplicateKeyExceptionProcessorSkipper() {
         return new DuplicateKeyExceptionProcessorSkipper();
@@ -77,14 +87,14 @@ public class BatchConfig {
     @Qualifier(value = "capDataStep")
     public Step capDataStep() {
         return stepBuilderFactory.get("capDataStep").<CapturedData, CapturedData>chunk(10)
-                .reader(capturedDataReader()).processor(new CapturedDataProcessor()).writer(capturedDataWriter()).faultTolerant().skipPolicy(dataIntegrityViolationExceptionSkipper()).faultTolerant().skipPolicy(duplicateKeyExceptionProcessorSkipper()).build();
+                .reader(capturedDataReader()).processor(new CapturedDataProcessor(capturedDataMongoRepository)).writer(capturedDataWriter()).faultTolerant().skipPolicy(dataIntegrityViolationExceptionSkipper()).faultTolerant().skipPolicy(duplicateKeyExceptionProcessorSkipper()).build();
     }
 
     @Bean
     public MongoItemReader<CapturedData> capturedDataReader() {
         MongoItemReader<CapturedData> reader = new MongoItemReader<>();
         reader.setTemplate(mongoTemplate);
-        reader.setCollection("captured_data");
+        reader.setCollection(readFromCollectionName);
         reader.setSort(new HashMap<String, Sort.Direction>() {
             {
                 put("_id", Direction.DESC);
@@ -99,7 +109,7 @@ public class BatchConfig {
     public MongoItemWriter<CapturedData> capturedDataWriter() {
         MongoItemWriter<CapturedData> writer = new MongoItemWriter<>();
         writer.setTemplate(mongoTemplate);
-        writer.setCollection("new_captured_data");
+        writer.setCollection(writeToCollectionName);
         return writer;
 
     }
