@@ -54,9 +54,7 @@ public class BatchConfig {
     @Value("${collection.name.to.read.from}")
     private String readFromCollectionName;
 
-    @Value("${collection.name.to.update}")
-    private String writeToCollectionName;
-
+   
     @Autowired
     CapturedDataMongoRepository capturedDataMongoRepository;
 
