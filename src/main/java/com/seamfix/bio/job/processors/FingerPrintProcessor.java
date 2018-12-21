@@ -11,6 +11,7 @@ import org.bson.Document;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -40,7 +41,9 @@ public class FingerPrintProcessor implements ItemProcessor<FingerPrint,FingerPri
         ArrayList<com.seamfix.bio.entities.DataUnit> fingers = fingerPrint.getFingers();
         for(DataUnit dataUnit : fingers){
             logger.info(" ======"+dataUnit.getLabel()+" ====== ");
-            dataUnit.setValue(extractor.toWsq(dataUnit.getValue()));
+            if(!StringUtils.isEmpty(dataUnit.getValue())){
+                dataUnit.setValue(extractor.toWsq(dataUnit.getValue()));
+            }
         }
 
         mongoDbDataSource.getMogoDbClient().getDatabase("bioregistra")
