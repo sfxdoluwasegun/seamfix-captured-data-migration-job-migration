@@ -8,23 +8,25 @@ package com.seamfix.bio.mongodb.datasource;
 import com.mongodb.*;
 import com.mongodb.client.MongoDatabase;
 import com.seamfix.bio.util.CryptManager;
-
+import nw.commons.logging.Loggable;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.keyczar.Crypter;
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.Morphia;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import nw.commons.logging.Loggable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 /**
  *
@@ -86,6 +88,7 @@ public class MongoDbDataSource extends Loggable {
 
     @Autowired
     CryptManager cryptManager;
+    private Datastore datastore;
 
     @PostConstruct
     public void init() {
@@ -158,6 +161,11 @@ public class MongoDbDataSource extends Loggable {
         String replicaConnectionUrl = connectionUrl;
         String mongoHost = host;
         int mongoPort = new Integer(port);
+
+        Morphia morphia = new Morphia();
+        morphia.mapPackage("com.sf.bioregistra.entity");
+
+
         if (Boolean.valueOf(useReplica)) {
             replicaConnectionUrl = replicaConnectionUrl + sslValue;
             replicaConnectionUrl = replicaConnectionUrl + PLUS + replicaSetValue;
@@ -170,6 +178,8 @@ public class MongoDbDataSource extends Loggable {
             uriBuilder.append(credentials).append(replicaConnectionUrl);
 
             innerMongoClient = new MongoClient(new MongoClientURI(uriBuilder.toString()));
+
+            datastore = morphia.createDatastore(innerMongoClient, "bioregistra");
         } else {
             MongoCredential credential = MongoCredential.createCredential(plainUsername, dbName, plainPw.toCharArray());
             if (plainUsername.trim().isEmpty() || plainPw.trim().isEmpty()) {
@@ -177,8 +187,14 @@ public class MongoDbDataSource extends Loggable {
             } else {
                 innerMongoClient = new MongoClient(new ServerAddress(mongoHost, mongoPort), credential, getMongoOptions());
             }
+
+            datastore = morphia.createDatastore(innerMongoClient, "bioregistra");
         }
         return innerMongoClient;
+    }
+
+    public Datastore getDatastore() {
+        return datastore;
     }
 
     public String getAppDbName() {
